@@ -51,7 +51,7 @@ VALUES('Jill', 'Tom','A', 'JTom@hallamcollege.com'),
 ('Thomas', 'Allen','', 'TAllen@hallamcollege.com'),
 ('Sarah', 'Young','C', 'SYoung@hallamcollege.com'),
 ('Taylor', 'Lewis','D', 'TLewis@hallamcollege.com'),
-('White', 'Cook','', 'WCook@hallamcollege.com')
+('Cook', 'White','', 'WCook@hallamcollege.com')
 
 CREATE TABLE Subjects_
 (Subject_id varchar(50),
@@ -137,3 +137,91 @@ SELECT student.firstName, student.class, student.age, minAge, maxAge, age_range.
 
 DROP VIEW year_above
 DROP VIEW classidcard
+
+--Next steps in SQL worksheet
+--students whos name starts with C
+SELECT FirstName, LastName FROM Student
+WHERE Firstname LIKE 'c%'
+
+--names start with a and at least 3 char long
+SELECT Firstname, lastname FROM student
+WHERE Firstname LIKE 'a___%'
+
+--surname in second half of the alphabet 
+SELECT Firstname, lastname FROM student
+WHERE Lastname LIKE '[m-z]%'
+
+--dont have a in full name
+SELECT FirstName, LastName FROM student
+WHERE Firstname NOT LIKE '%a%' AND LastName NOT LIKE '%a%'
+
+--double vowel
+SELECT FirstName LastName FROM student
+WHERE FirstName LIKE '%[a,e,i,o,u][a,e,i,o,u]%' OR LastName LIKE '%[a,e,i,o,u][a,e,i,o,u]%'
+
+--teach english history or music 
+SELECT DISTINCT Subject_Teacher FROM Subjects_ WHERE Subject_Name IN ('English', 'History', 'Music');
+SELECT DISTINCT Subject_Teacher FROM Subjects_ WHERE Subject_Name NOT IN ('English', 'History', 'Music');
+--how many student in each class
+SELECT class, COUNT(class) AS class_count FROM student GROUP BY class
+SELECT min(mark), max(mark), subject_name FROM test_results GROUP BY Subject_Name
+SELECT avg(mark)  , subject_Name FROM test_results GROUP BY Subject_Name having avg(mark) > 50
+
+-- task c 
+--1 
+CREATE TABLE Meals (
+FirstName varchar(20),
+LastName varchar(20),
+special_dietary varchar(1)
+)
+INSERT INTO meals
+VALUES ('John', 'Turner', 'N'),
+('Robert', 'Harrison', 'N'),
+('Paula', 'Ben', 'Y'),
+('William', 'Carson', 'N'),
+('Geordie', 'Xavier', 'N'),
+('Harry', 'Fisher', 'N'),
+('Peter', 'Kenneth', 'N'),
+('Adrian', 'Smith', 'Y'),
+('Lois', 'Xavier', 'Y'), 
+('Carl', 'Evans', 'N'),
+('Donald', 'Brown', 'N'), 
+('Carman', 'Robbin', 'N'),
+('Paige', 'Tom', 'Y'), 
+('Clinton', 'Bailey', 'Y')
+--2 
+SELECT Student_id, FirstName, LastName, class, age
+FROM Student
+WHERE FirstName IN (SELECT FirstName FROM meals WHERE special_dietary = 'Y')
+
+--3
+SELECT Student_id, FirstName, LastName, class, age
+FROM Student
+WHERE FirstName IN (SELECT FirstName FROM meals WHERE special_dietary = 'N')
+
+--4 
+SELECT avg(age)
+FROM Student
+WHERE FirstName IN (SELECT FirstName FROM meals WHERE special_dietary = 'Y')
+
+
+SELECT avg(age)
+FROM Student
+WHERE FirstName IN (SELECT FirstName FROM meals WHERE special_dietary = 'N')
+
+
+--5teachers who dont teach classes 
+SELECT FirstName, LastName FROM Teachers WHERE Teacher_Class = '';
+--6
+SELECT CONCAT(student.firstName,' ', student.LastName) AS 'pupil' , Guardian_Email as 'Contact Details', 
+CONCAT(teachers.FirstName, ' ', teachers.LastName) as 'Guardian'
+FROM Student
+INNER JOIN teachers
+ON student.LastName =
+teachers.LastName;
+
+
+
+--9 How many students does each teacher have 
+SELECT COUNT(student.Student_id), student.class, teachers.teacher_class FROM Student
+LEFT join teachers ON student.class = teachers.Teacher_class G
